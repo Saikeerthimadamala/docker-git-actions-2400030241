@@ -1,0 +1,42 @@
+services:
+  postgresdb:
+    image: postgres:16-alpine
+    container_name: farmercooperative-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: farmercooperativedb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - springboot-postgres-net
+
+  backend:
+    image: saikeerthimadamala28/docker-backend-2400030241:latest
+    container_name: farmercooperative-backend
+    ports:
+      - "2025:8081"
+    depends_on:
+      - postgresdb
+    restart: on-failure
+    networks:
+      - springboot-postgres-net
+
+  frontend:
+    image: saikeerthimadamala28/docker-frontend-2400030241:latest
+    container_name: farmercooperative-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    networks:
+      - springboot-postgres-net
+
+volumes:
+  postgres_data:
+
+networks:
+  springboot-postgres-net:
